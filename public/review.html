@@ -1,0 +1,10 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ulasan</title><link rel="stylesheet" href="style.css"></head><body><div class="login" style="max-width:480px;margin:5vh auto"><div id="c">Memuat...</div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script>
+<script>
+const sb=supabase.createClient(CFG.URL,CFG.KEY,{global:{fetch:CFG.fetch}}),t=new URLSearchParams(location.search).get('t'),$=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));let rt=0;
+(async()=>{const{data:d}=await sb.rpc('get_review',{p_token:t});if(!d)return $('#c').textContent='Link tidak valid atau tidak aktif.';document.title=d.vendor;
+ if(d.status!=='menunggu')return $('#c').innerHTML='<h3>Terima kasih! ✓</h3><p>Ulasan Anda sudah kami terima.</p>';
+ $('#c').innerHTML=`${d.logo?`<img src="${esc(d.logo)}" style="height:60px;max-width:100%">`:''}<h3>Bagaimana pengalaman Anda dengan ${esc(d.vendor)}?</h3>${d.package?`<p>${esc(d.package)}</p>`:''}<div id="st" style="font-size:36px;cursor:pointer">${[1,2,3,4,5].map(i=>`<span data-i="${i}" onclick="set(${i})">☆</span>`).join('')}</div><label>Komentar (opsional)<textarea id="cm" rows="4"></textarea></label><button onclick="go()">Kirim ulasan</button><p id="er" class="err"></p>`})();
+function set(i){rt=i;document.querySelectorAll('#st span').forEach(s=>s.textContent=+s.dataset.i<=i?'★':'☆')}
+async function go(){if(!rt)return $('#er').textContent='Pilih jumlah bintang';const{data,error}=await sb.rpc('submit_review',{p_token:t,p_rating:rt,p_comment:$('#cm').value});if(error||!data)return $('#er').textContent='Gagal mengirim / sudah pernah diisi';$('#c').innerHTML='<h3>Terima kasih! ✓</h3><p>Ulasan Anda sangat berarti bagi kami.</p>'}
+</script></body></html>

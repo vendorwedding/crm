@@ -5,7 +5,7 @@ Kode di repo ini sama untuk kedua host. Data tetap satu: Supabase. Fungsi server
 
 ## 1. Susunan yang disarankan
 - **Domain Anda → Cloudflare Pages** (utama). Alasan: file statis tidak dibatasi dan situs tidak "dijeda" saat kuota habis.
-- **Netlify tetap aktif** di alamat `namasitus.netlify.app` sebagai cadangan.
+- **Netlify tetap aktif** (publish directory `public`) di alamat `namasitus.netlify.app` sebagai cadangan.
 - Di `config.js` isi **keduanya dengan alamat utama**, supaya link yang dikirim ke client (portal, tanda tangan, ulasan, kalender) dan panggilan fungsi server tetap hidup walau Netlify mati:
   ```js
   window.CFG={PUBLIC:'https://app.domainanda.com',API:'https://app.domainanda.com',URL:'...',KEY:'...',fetch:...};
@@ -14,7 +14,7 @@ Kode di repo ini sama untuk kedua host. Data tetap satu: Supabase. Fungsi server
 
 ## 2. Pasang di Cloudflare Pages
 1. Daftar/login Cloudflare → **Workers & Pages** → **Create** → **Pages** → **Import an existing Git repository** → pilih repo GitHub ini.
-2. Framework preset: **None**. Build command: **`exit 0`** (jangan dikosongkan: Cloudflare menyarankan ini agar fungsi server Pages Functions aktif). Build output directory: **/** (jika ditolak, isi **.**).
+2. Framework preset: **None**. Build command: **`exit 0`** (jangan dikosongkan: Cloudflare menyarankan ini agar fungsi server Pages Functions aktif). Build output directory: **`public`**.
 3. Setelah proyek jadi: **Settings → Variables and Secrets**, tambahkan (untuk Production):
    - `SUPABASE_URL` = alamat Supabase Anda
    - `SUPABASE_SERVICE_ROLE_KEY` = Secret key Supabase (jenis **Secret**, jangan pernah di config.js/GitHub)
@@ -46,3 +46,6 @@ Authentication → URL Configuration: **Site URL** = alamat utama; tambahkan ala
 - Pengalihan otomatis (failover) antar host tidak tersedia gratis; pengalihan dilakukan manual seperti di atas.
 - Kedua host harus diperbarui bila ada versi baru (Netlify bisa sengaja lebih jarang, lihat bagian 3).
 - Halaman bergantung pada Supabase: bila Supabase bermasalah, kedua host ikut terdampak.
+
+## 8. Catatan struktur (v1.16)
+File situs ada di `public/`. Cloudflare **Workers** memakai `wrangler.jsonc` + `src/worker.js`; Cloudflare **Pages** memakai `functions/`; Netlify memakai `netlify/functions/` dan `publish = "public"`. Semua memanggil logika yang sama di `lib/api.js`. Panduan pemula: `PANDUAN-CLOUDFLARE.md`.

@@ -1,0 +1,15 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Portal Client</title><link rel="stylesheet" href="style.css"></head><body><header><img id="lg" style="display:none"><b id="vn"></b></header><main id="m" style="max-width:900px;margin:auto">Memuat...</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script>
+<script>
+const sb=supabase.createClient(CFG.URL,CFG.KEY,{global:{fetch:CFG.fetch}}),tk=new URLSearchParams(location.search).get('t'),rp=n=>'Rp '+Number(n||0).toLocaleString('id-ID'),dt=d=>d?new Date(d).toLocaleDateString('id-ID'):'',
+esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const T=(h,r)=>`<div class="tw"><table><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr>${r.map(a=>`<tr>${a.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')||`<tr><td colspan="${h.length}">-</td></tr>`}</table></div>`;
+(async()=>{const{data:d}=await sb.rpc('portal_data',{p_token:tk});if(!d)return m.textContent='Link tidak valid atau tidak aktif.';
+ vn.textContent=d.vendor.name;document.title=d.vendor.name;if(d.vendor.logo){lg.src=d.vendor.logo;lg.style.display=''}
+ const tot=d.invoices.reduce((s,i)=>s+i.amount-i.paid,0);
+ m.innerHTML=`<h2>Halo, ${esc(d.client)}</h2>${d.vendor.wa?`<p><a href="https://wa.me/${d.vendor.wa.replace(/\D/g,'').replace(/^0/,'62')}">💬 Hubungi kami via WhatsApp</a></p>`:''}<div class="cards"><div class="card">Sisa tagihan<b>${rp(tot)}</b></div></div>
+ <h3>Booking</h3>${T(['Paket','Tanggal','Total','Status'],d.bookings.map(b=>[b.package,dt(b.date),rp(b.total),b.status]))}
+ <h3>Tagihan</h3>${T(['No','Jenis','Nominal','Terbayar','Sisa','Jatuh tempo','Status'],d.invoices.map(i=>[i.number,i.type,rp(i.amount),rp(i.paid),rp(i.amount-i.paid),dt(i.due),i.status]))}
+ <h3>Jadwal</h3>${T(['Jenis','Waktu','Lokasi'],[...d.events.map(e=>['Acara: '+e.title,dt(e.date),e.venue]),...d.meetings.map(x=>['Meeting',x.at?new Date(x.at).toLocaleString('id-ID'):'',x.place])])}
+ <h3>Hasil / Output</h3>${T(['Output','Deadline','Status','Link'],d.deliverables.map(x=>[x.title,dt(x.due),x.status,x.link]))}`})();
+</script></body></html>

@@ -1,50 +1,38 @@
-# Panduan pemula: pasang Vendor CRM di Cloudflare Pages lewat GitHub
+# Panduan pemula: Vendor CRM di Cloudflare lewat GitHub (v1.16)
 
-Perkiraan waktu: 30-45 menit. Biaya: gratis. Anda butuh: file zip aplikasi, akun email, dan data Supabase (URL + Secret key).
+Struktur repo sekarang cocok untuk dua jenis proyek Cloudflare: **Workers** (yang dibuat dashboard terbaru, memakai "npx wrangler deploy") dan **Pages**.
+Folder `public/` = file situs. `src/worker.js` + `wrangler.jsonc` = jalur Workers. `functions/` = jalur Pages. `lib/api.js` = logika fungsi server (dipakai semuanya).
 
-## A. Siapkan file
-1. Ekstrak zip `wedding-vendor-crm-v1.15.x.zip` ke satu folder (klik kanan → Extract All).
-2. Buka folder hasil ekstrak. Pastikan di dalamnya LANGSUNG ada `index.html`, `app.js`, `config.js`, folder `functions`, `lib`, `supabase` (bukan folder di dalam folder).
-3. Buka `config.js` dengan Notepad dan cek URL dan KEY Supabase sudah benar. (Kunci `sb_publishable_` aman. Kunci `sb_secret_` TIDAK BOLEH ditulis di file mana pun.)
+## A. Perbaikan error "functions directory and static files in its root"
+Penyebab: struktur lama (v1.15) menaruh file situs di akar repo bersama folder `functions`. Dashboard Workers menolaknya.
+1. Ekstrak zip v1.16.x. Pastikan terlihat folder `public`, `src`, `lib`, `functions`, `supabase` dan file `wrangler.jsonc`.
+2. GitHub → repo Anda → **Add file → Upload files** → seret SEMUA isi folder (termasuk `public`, `src`, `wrangler.jsonc`) → **Commit changes**.
+3. Cek nama proyek di Cloudflare (Workers & Pages). Buka `wrangler.jsonc` di GitHub (ikon pensil) dan pastikan baris `"name"` SAMA PERSIS dengan nama proyek tersebut (bawaan: `vendor-crm`). Ubah bila beda, lalu Commit.
+4. Cloudflare membangun otomatis setelah commit. Di log harus muncul `Executing user deploy command: npx wrangler deploy` lalu tanda berhasil.
+5. (Opsional) hapus file lama di akar repo yang sudah pindah ke `public/` (index.html, app.js, config.js, style.css, sw.js, version.js, manifest.webmanifest, icon-192.png, icon-512.png, book.html, portal.html, review.html, sign.html, _headers). Tidak wajib; tidak mengganggu.
 
-## B. GitHub
-1. Buat akun di github.com (gratis), lalu buka https://repo.new
-2. Repository name: mis. `vendor-crm`. Pilih **Private**. Jangan centang README/.gitignore. Klik **Create repository**.
-3. Di halaman repo kosong klik **uploading an existing file**.
-4. Dari File Explorer, pilih SEMUA isi folder (Ctrl+A) lalu seret ke kotak GitHub. Tunggu semua terunggah (folder ikut terbawa).
-5. Di bawah, klik **Commit changes** (cabang `main`). Periksa bahwa `index.html` tampil di daftar file paling atas.
+## B. Variabel rahasia (wajib untuk Pengguna, Migrasi, Kalender)
+Proyek → **Settings** → **Variables and Secrets** → tambahkan:
+- `SUPABASE_URL` = alamat Supabase
+- `SUPABASE_SERVICE_ROLE_KEY` = Secret key (tipe Secret)
+- `ALLOWED_ORIGINS` = boleh kosong dulu
+Lalu jalankan build ulang (Deployments → Retry / atau commit kecil).
 
-## C. Cloudflare Pages
-1. Daftar/login di dash.cloudflare.com (gratis, tanpa kartu kredit).
-2. Menu **Workers & Pages** → **Create application** → tab **Pages** → **Import an existing Git repository** (atau **Connect to Git**).
-3. Pilih **GitHub**, izinkan (Install & Authorize), pilih repo `vendor-crm` → **Begin setup**.
-4. Isi:
-   - Project name: mis. `vendorcrm` (jadi alamat `vendorcrm.pages.dev`)
-   - Production branch: `main`
-   - Framework preset: **None**
-   - Build command: **`exit 0`**
-   - Build output directory: **`/`** (jika ditolak, isi `.`)
-5. Klik **Save and Deploy**. Tunggu sampai status berhasil.
+## C. Alamat situs
+Jalur Workers: `https://vendor-crm.<akun>.workers.dev` (lihat Settings → Domains & Routes; aktifkan workers.dev bila belum tampil).
+Jalur Pages: `https://namaproyek.pages.dev`.
 
-## D. Isi variabel rahasia (wajib untuk fitur Pengguna, Migrasi, Kalender)
-1. Buka proyek → **Settings** → **Variables and Secrets** (atau Environment variables).
-2. Tambahkan untuk **Production**:
-   - `SUPABASE_URL` = alamat Supabase Anda
-   - `SUPABASE_SERVICE_ROLE_KEY` = Secret key (tipe **Secret**)
-   - `ALLOWED_ORIGINS` = (boleh dikosongkan dulu; nanti isi alamat Netlify jika dipakai sebagai cadangan)
-3. Buka **Deployments** → deploy terbaru → **Retry deployment** agar variabel terbaca.
+## D. Uji
+Login admin → Pengguna → Buat akun (harus berhasil) → Kalender → Sinkron Google Kalender (link `/cal.ics?t=...` harus mengunduh kalender).
 
-## E. Uji
-1. Buka `https://namaproyek.pages.dev` → login admin.
-2. Pilih vendor → **Pengguna → Buat akun** (harus berhasil).
-3. Menu **Kalender → Sinkron Google Kalender**: buka link `…/cal.ics?t=…`, harus terunduh file kalender.
+## E. Jika memilih Pages (bukan Workers)
+Workers & Pages → Create application → tab Pages → Import an existing Git repository. Framework None, Build command `exit 0`, Build output directory `public`.
 
 ## F. Memperbarui aplikasi
-GitHub → repo → **Add file → Upload files** → seret isi versi baru (timpa file bernama sama) → **Commit changes**. Cloudflare memperbarui otomatis dalam 1-2 menit.
+GitHub → Add file → Upload files → seret isi versi baru (timpa) → Commit. Cloudflare membangun ulang otomatis.
 
-## G. Jika bermasalah
-- 404 di alamat pages.dev: `index.html` tidak berada di akar repo atau output directory salah.
-- Layar putih: tekan Ctrl+Shift+R; baca pesan di kotak "Aplikasi gagal dimuat".
-- "Invalid API key": URL/KEY di `config.js` tidak cocok (harus dari project Supabase yang sama).
-- Buat akun gagal / fungsi 404 atau 500: build command bukan `exit 0`, variabel belum diisi, atau belum **Retry deployment**.
-- Pilihan Production branch kosong: pastikan sudah ada file di GitHub (langkah B).
+## G. Masalah umum
+- Error nama (name mismatch) saat deploy: samakan `"name"` di wrangler.jsonc dengan nama proyek.
+- 404: pastikan folder `public` berisi index.html di GitHub.
+- Layar putih: Ctrl+Shift+R, baca kotak pesan error.
+- Buat akun gagal: variabel belum diisi / belum build ulang.

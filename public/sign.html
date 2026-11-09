@@ -1,0 +1,14 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tanda Tangan</title><link rel="stylesheet" href="style.css"></head><body><div class="login" style="max-width:560px;margin:5vh auto"><div id="c">Memuat...</div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script><script src="config.js"></script>
+<script>
+const sb=supabase.createClient(CFG.URL,CFG.KEY,{global:{fetch:CFG.fetch}}),t=new URLSearchParams(location.search).get('t'),$=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let cv,x,dr=false,dirty=false;
+(async()=>{const{data:d}=await sb.rpc('get_agreement',{p_token:t});if(!d)return $('#c').textContent='Link tidak valid atau sudah tidak aktif.';
+ $('#c').innerHTML=`<h3>Perjanjian Kerjasama — ${esc(d.vendor)}</h3><p><b>Mitra:</b> ${esc(d.partner)}<br><b>Jenis:</b> ${esc(d.type)}</p><div style="white-space:pre-wrap;border:1px solid var(--b);padding:10px;border-radius:8px">${esc(d.terms)}</div>`+(d.signed_at?`<p>✓ Sudah ditandatangani oleh <b>${esc(d.signed_name)}</b> pada ${new Date(d.signed_at).toLocaleString('id-ID')}</p>`:`<label>Nama lengkap<input id="n"></label><label>Tanda tangan (gambar di kotak)</label><canvas id="cv" width="500" height="160" style="border:1px dashed #999;width:100%;touch-action:none;background:#fff"></canvas><div class="bar"><button class="g" onclick="clr()">Hapus</button><button onclick="go()">Saya setuju & tanda tangani</button></div><p id="er" class="err"></p>`);
+ if(!d.signed_at)init()})();
+function init(){cv=$('#cv');x=cv.getContext('2d');x.lineWidth=2;x.lineCap='round';const p=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
+ cv.onpointerdown=e=>{dr=dirty=true;x.beginPath();x.moveTo(...p(e))};cv.onpointermove=e=>{if(dr){x.lineTo(...p(e));x.stroke()}};cv.onpointerup=cv.onpointerleave=()=>dr=false}
+function clr(){x.clearRect(0,0,500,160);dirty=false}
+async function go(){const n=$('#n').value.trim();if(!n||!dirty)return $('#er').textContent='Isi nama dan tanda tangan terlebih dahulu';
+ const{data,error}=await sb.rpc('sign_agreement',{p_token:t,p_name:n,p_sig:cv.toDataURL('image/png')});if(error||!data)return $('#er').textContent=error?.message||'Gagal / sudah ditandatangani';location.reload()}
+</script></body></html>

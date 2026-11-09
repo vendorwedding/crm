@@ -1,4 +1,6 @@
 # Riwayat Rilis
+## 1.16.0
+- Struktur repo universal: file situs dipindah ke public/; tambah wrangler.jsonc + src/worker.js (Cloudflare Workers, perbaikan error "functions directory and static files in its root"); functions/ tetap untuk Cloudflare Pages; Netlify publish = public. Folder supabase/, lib/, dokumen tidak ikut dipublikasikan.
 ## 1.15.1
 - Koreksi panduan hosting: Build command Cloudflare Pages harus `exit 0` (bukan kosong) agar fungsi server aktif. Tambah PANDUAN-CLOUDFLARE.md (langkah demi langkah untuk pemula).
 ## 1.15.0
