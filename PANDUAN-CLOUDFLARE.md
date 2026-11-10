@@ -12,10 +12,10 @@ Penyebab: struktur lama (v1.15) menaruh file situs di akar repo bersama folder `
 5. (Opsional) hapus file lama di akar repo yang sudah pindah ke `public/` (index.html, app.js, config.js, style.css, sw.js, version.js, manifest.webmanifest, icon-192.png, icon-512.png, book.html, portal.html, review.html, sign.html, _headers). Tidak wajib; tidak mengganggu.
 
 ## B. Variabel rahasia (wajib untuk Pengguna, Migrasi, Kalender)
-Proyek → **Settings** → **Variables and Secrets** → tambahkan:
-- `SUPABASE_URL` = alamat Supabase
-- `SUPABASE_SERVICE_ROLE_KEY` = Secret key (tipe Secret)
-- `ALLOWED_ORIGINS` = boleh kosong dulu
+`SUPABASE_URL` (alamat publik) sudah tertulis di `wrangler.jsonc` bagian `vars`; ubah di sana jika Supabase Anda berbeda.
+Yang WAJIB Anda isi sendiri: Proyek → **Settings** → **Variables and Secrets** (yang untuk *runtime*, BUKAN bagian *Build*):
+- `SUPABASE_SERVICE_ROLE_KEY` = Secret key Supabase, tipe **Secret**
+- `ALLOWED_ORIGINS` = boleh kosong dulu (Text)
 Lalu jalankan build ulang (Deployments → Retry / atau commit kecil).
 
 ## C. Alamat situs
@@ -32,6 +32,7 @@ Workers & Pages → Create application → tab Pages → Import an existing Git 
 GitHub → Add file → Upload files → seret isi versi baru (timpa) → Commit. Cloudflare membangun ulang otomatis.
 
 ## G. Masalah umum
+- Pesan `Invalid URL: /auth/v1/user` atau `Pengaturan server belum lengkap`: variabel `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` belum terbaca. Pastikan diisi di Variables and Secrets bagian runtime (bukan Build), kuncinya bertipe Secret, dan sudah deploy ulang. Di v1.16.1 `SUPABASE_URL` sudah ada di wrangler.jsonc dan `keep_vars` aktif agar variabel dashboard tidak terhapus saat deploy.
 - Error nama (name mismatch) saat deploy: samakan `"name"` di wrangler.jsonc dengan nama proyek.
 - 404: pastikan folder `public` berisi index.html di GitHub.
 - Layar putih: Ctrl+Shift+R, baca kotak pesan error.

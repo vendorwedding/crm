@@ -1,4 +1,4 @@
-const V='crm-1.16.0',SHELL=['/','/index.html','/style.css','/app.js','/version.js','/config.js','/manifest.webmanifest','/icon-192.png','/icon-512.png'];
+const V='crm-1.16.1',SHELL=['/','/index.html','/style.css','/app.js','/version.js','/config.js','/manifest.webmanifest','/icon-192.png','/icon-512.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==V&&n!=='data').map(n=>caches.delete(n)))).then(()=>clients.claim())));
 self.addEventListener('fetch',e=>{const r=e.request,u=new URL(r.url);if(r.method!=='GET')return;

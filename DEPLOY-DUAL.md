@@ -49,3 +49,6 @@ Authentication → URL Configuration: **Site URL** = alamat utama; tambahkan ala
 
 ## 8. Catatan struktur (v1.16)
 File situs ada di `public/`. Cloudflare **Workers** memakai `wrangler.jsonc` + `src/worker.js`; Cloudflare **Pages** memakai `functions/`; Netlify memakai `netlify/functions/` dan `publish = "public"`. Semua memanggil logika yang sama di `lib/api.js`. Panduan pemula: `PANDUAN-CLOUDFLARE.md`.
+
+## 9. Variabel di Cloudflare Workers
+`SUPABASE_URL` ada di `wrangler.jsonc` (bagian `vars`). Isi `SUPABASE_SERVICE_ROLE_KEY` sebagai **Secret** di Settings → Variables and Secrets (runtime). `keep_vars` aktif supaya variabel yang diisi lewat dashboard tidak terhapus oleh deploy.

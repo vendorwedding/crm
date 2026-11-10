@@ -1,4 +1,6 @@
 # Riwayat Rilis
+## 1.16.1
+- Perbaikan: error "Invalid URL: /auth/v1/user" saat Buat akun (variabel server tidak terbaca di Cloudflare Workers). SUPABASE_URL kini ada di wrangler.jsonc, keep_vars aktif, dan fungsi server menampilkan pesan jelas bila variabel belum diisi.
 ## 1.16.0
 - Struktur repo universal: file situs dipindah ke public/; tambah wrangler.jsonc + src/worker.js (Cloudflare Workers, perbaikan error "functions directory and static files in its root"); functions/ tetap untuk Cloudflare Pages; Netlify publish = public. Folder supabase/, lib/, dokumen tidak ikut dipublikasikan.
 ## 1.15.1
