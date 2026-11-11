@@ -1,4 +1,6 @@
 # Riwayat Rilis
+## 1.16.3
+- Fungsi server mendeteksi bila SUPABASE_SERVICE_ROLE_KEY berisi kunci publik (publishable/anon) dan menampilkan pesan jelas; pesan "profil tidak terbaca" diperjelas.
 ## 1.16.2
 - Perbaikan "unauthorized" saat Buat akun/Migrasi: token pengguna kini diverifikasi dengan kunci publik (publishable) bukan kunci rahasia; browser mengirim header apikey; SUPABASE_ANON_KEY di wrangler.jsonc. Pesan error 401 kini menyebutkan penyebab (token, sesi, atau profil).
 ## 1.16.1
