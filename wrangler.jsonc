@@ -5,6 +5,7 @@
   "keep_vars": true,
   "assets": { "directory": "./public", "binding": "ASSETS" },
   "vars": {
-    "SUPABASE_URL": "https://vemlizysczqplrusnvoq.supabase.co"
+    "SUPABASE_URL": "https://vemlizysczqplrusnvoq.supabase.co",
+    "SUPABASE_ANON_KEY": "sb_publishable_qDLygWLNIE_niR3pc0JrrQ_LI39mUll"
   }
 }

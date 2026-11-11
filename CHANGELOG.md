@@ -1,4 +1,6 @@
 # Riwayat Rilis
+## 1.16.2
+- Perbaikan "unauthorized" saat Buat akun/Migrasi: token pengguna kini diverifikasi dengan kunci publik (publishable) bukan kunci rahasia; browser mengirim header apikey; SUPABASE_ANON_KEY di wrangler.jsonc. Pesan error 401 kini menyebutkan penyebab (token, sesi, atau profil).
 ## 1.16.1
 - Perbaikan: error "Invalid URL: /auth/v1/user" saat Buat akun (variabel server tidak terbaca di Cloudflare Workers). SUPABASE_URL kini ada di wrangler.jsonc, keep_vars aktif, dan fungsi server menampilkan pesan jelas bila variabel belum diisi.
 ## 1.16.0

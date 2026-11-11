@@ -32,6 +32,7 @@ Workers & Pages → Create application → tab Pages → Import an existing Git 
 GitHub → Add file → Upload files → seret isi versi baru (timpa) → Commit. Cloudflare membangun ulang otomatis.
 
 ## G. Masalah umum
+- Pesan `unauthorized` saat Buat akun: (1) keluar lalu masuk lagi; (2) pastikan tabel `profiles` memuat akun Anda (peran admin/owner, aktif); (3) pastikan `SUPABASE_ANON_KEY` (kunci publishable) ada di wrangler.jsonc dan `SUPABASE_SERVICE_ROLE_KEY` terisi sebagai Secret. Sejak v1.16.2 pesannya menyebutkan penyebab pastinya.
 - Pesan `Invalid URL: /auth/v1/user` atau `Pengaturan server belum lengkap`: variabel `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` belum terbaca. Pastikan diisi di Variables and Secrets bagian runtime (bukan Build), kuncinya bertipe Secret, dan sudah deploy ulang. Di v1.16.1 `SUPABASE_URL` sudah ada di wrangler.jsonc dan `keep_vars` aktif agar variabel dashboard tidak terhapus saat deploy.
 - Error nama (name mismatch) saat deploy: samakan `"name"` di wrangler.jsonc dengan nama proyek.
 - 404: pastikan folder `public` berisi index.html di GitHub.
